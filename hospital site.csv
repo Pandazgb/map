@@ -1,4 +1,4 @@
-id,name,pingying,field,office,illness(2010),illness(2009),illness(2008),adress,phone,X,Y,size
+ID,NAME,PINGYIN,FIELD,OFFICE,ILLNESS(2010),ILLNESS(2009),ILLNESS(2008),ADRESS,PHONE,X,Y,SIZE
 1,卢沟桥医院,lu gou qiao yi yuan,丰台区,100072,500,300,100,北京市丰台区晓月苑清音街１号,1083211441,116.240227,39.838136,1
 2,玉泉医院,yu quan yi yuan,石景山区,100041,1000,800,600,北京市石景山区石景山路５号,1088257755,116.24658,39.907778,2
 3,二龙路医院,er long lu yi yuan,西城区,100032,450,250,50,北京市西城区二龙路下岗胡同１号,1066014447,116.366238,39.91041,2
