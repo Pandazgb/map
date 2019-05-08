@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>中小学</title>
+
+		<style>
+			html,
+			body,
+			#viewDiv {
+				padding: 0;
+				margin: 0;
+				height: 100%;
+				width: 100%;
+			}
+		</style>
+
+		<link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/themes/light/main.css" />
+		<script src="https://js.arcgis.com/4.11/"></script>
+
+		<script>
+			require([
+				"esri/Map",
+				"esri/layers/GeoJSONLayer",
+				"esri/layers/CSVLayer",
+				"esri/views/SceneView",
+				"esri/widgets/Legend",
+			], function(Map, GeoJSONLayer, CSVLayer, SceneView, Legend) {
+				// If GeoJSON files are not on the same domain as your website, a CORS enabled server
+				// or a proxy is required.
+				const highschoolurl =
+					"https://pandazgb.github.io/map/中学.json";
+				const schoolurl =
+					"https://pandazgb.github.io/map/小学.json";
+				// Paste the url into a browser's address bar to download and view the attributes
+				// in the GeoJSON file.
+				const hspitalurl =
+					"https://pandazgb.github.io/map/hospital.csv";
+
+				const geojsonhighschoolLayer = new GeoJSONLayer({
+					url: highschoolurl,
+					title: "中学",
+					renderer: {
+						type: "simple", // autocasts as new SimpleRenderer()
+						symbol: {
+							type: "web-style", // autocasts as new WebStyleSymbol()
+							name: "Bus",
+							styleName: "EsriIconsStyle"
+						}
+					}
+				});
+				const geojsonschoolLayer = new GeoJSONLayer({
+					url: schoolurl,
+					title: "小学",
+					renderer: {
+						type: "simple", // autocasts as new SimpleRenderer()
+						symbol: {
+							type: "web-style", // autocasts as new WebStyleSymbol()
+							name: "Playground",
+							styleName: "EsriIconsStyle",
+							material: {
+								color: "red",
+							}
+						}
+					}
+				});
+
+				const hospitalcsvLayer = new CSVLayer({
+					url: hspitalurl,
+					title: "医院",
+					latitudeField: "Y",
+					longitudeField: "X",
+					renderer: {
+						type: "simple", // autocasts as new SimpleRenderer()
+						symbol: {
+							type: "point-3d", // autocasts as new PointSymbol3D()
+							symbolLayers: [{
+								type: "object", // autocasts as new ObjectSymbol3DLayer()
+								resource: {
+									primitive: "cone"
+								},
+								width: 50 // width of the symbol in meters
+							}]
+						},
+
+						visualVariables: [{
+								type: "color",
+								field: "SIZE",
+								stops: [{
+									value: 1,
+									color: "red"
+								}, {
+									value: 2,
+									color: "yellow"
+								}, {
+									value: 3,
+									color: "blue"
+								}]
+							},
+							{
+								type: "size",
+								field: "ILLNESS2008",
+								stops: [{
+										value: 100,
+										size: 100
+									},
+									{
+										value: 1020,
+										size: 2000
+									}
+								],
+								axis: "height"
+							},
+							{
+								type: "size",
+								axis: "width-and-depth",
+								useSymbolValue: true // uses the width value defined in the symbol layer (50,000)
+							}
+						]
+					}
+				});
+				const map = new Map({
+					basemap: "gray",
+					layers: [hospitalcsvLayer, geojsonschoolLayer, geojsonhighschoolLayer],
+
+				});
+
+				const view = new SceneView({
+					container: "viewDiv",
+					camera: {
+						position: {
+							latitude: 39.9005568903,
+							longitude: 116.38925892,
+							z: 1000
+						},
+						tilt: 78,
+						heading: 315
+					},
+					map: map
+				});
+
+
+
+				view.ui.add(new Legend({
+					view: view
+				}), "bottom-right");
+
+
+
+
+			});
+		</script>
+	</head>
+
+	<body>
+		<div id="viewDiv"></div>
+	</body>
+</html>
