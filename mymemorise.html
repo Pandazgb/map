@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
+		<title>Visualize data with rotation - 4.11</title>
+
+		<style>
+			html,
+			body,
+			#viewDiv {
+				height: 100%;
+				width: 100%;
+				margin: 0;
+				padding: 0;
+			}
+			button{
+				height: 35px;
+				width: 100%;
+				border: none;
+				background-color: beige;
+				margin-top: 10px;
+				margin-bottom: 10px;
+				border-radius: 20px;
+			}
+			
+			.tree{
+				position: absolute;
+				left: 50px;
+				
+			}
+			#first{
+				display: none;
+				margin-left: 20px;
+			}
+			#second{
+				display: none;
+				margin-left: 20px;
+				}
+			#thrid{
+				display: none;
+				margin-left: 20px;
+			}
+			#sbutton{
+				display: none;
+			}
+			#tbutton{
+				display: none;
+			}
+		</style>
+
+		<link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/themes/light/main.css" />
+		<script src="https://js.arcgis.com/4.11/"></script>
+		<script>
+			require([
+				"esri/Map",
+				"esri/views/SceneView",
+				"esri/layers/CSVLayer",
+				"esri/layers/GeoJSONLayer",
+				"esri/layers/support/LabelClass",
+			], function(Map, SceneView, CSVLayer, GeoJSONLayer, LabelClass) {
+				
+				
+				
+			const xydsymbol = {
+				type: "point-3d",  // autocasts as new PointSymbol3D()
+				symbolLayers: [{
+				  type: "icon",  // autocasts as new IconSymbol3DLayer()
+				  size: 50,  // points
+				  resource: { href: "https://pandazgb.github.io/map/爱情鸟.png" },
+				  
+				}]
+								};
+
+				const tmdrotationRenderer = {
+					type: "simple", // autocasts as new SimpleRenderer()
+					symbol: xydsymbol,
+				};
+
+
+			
+
+
+				const xydrotationRenderer = {
+					type: "simple", // autocasts as new SimpleRenderer()
+					symbol: xydsymbol,
+				};
+
+				const shdrotationRenderer = {
+					type: "simple", // autocasts as new SimpleRenderer()
+					symbol: xydsymbol,
+				};
+
+
+
+	var labelClass = new LabelClass({
+					labelExpressionInfo: {
+						expression: "$feature.name" // Text for labels comes from COUNTY field
+					},
+					symbol: {
+						type: "text", // autocasts as new TextSymbol()
+						color: "black",
+						haloSize: 5,
+						haloColor: "white"
+					}
+				});
+
+
+
+
+				const tmdlayer = new CSVLayer({
+					url: "https://pandazgb.github.io/map/甜蜜之旅_点_.csv",
+					latitudeField: "lat",
+					longitudeField: "lot",
+					renderer: tmdrotationRenderer,
+					labelsVisible: true,
+					labelingInfo: [labelClass],
+					fields: [{
+							name: "name",
+							alias: "name",
+							type: "string"
+						},
+						{
+							name: "others",
+							alias: "others",
+							type: "string"
+						},
+
+					],
+					popupTemplate: {
+						title: "{name}",
+						content: "{expression/per-land-area}",
+						expressionInfos: [{
+							title: "per-land-area",
+							name: "per-land-area",
+							expression: "IIF(!IsEmpty($feature.name), $feature.others, 'No data')"
+						}]
+					},
+				});
+
+
+
+			
+
+				const xydlayer = new CSVLayer({
+					url: "https://pandazgb.github.io/map/相遇之时_点_.csv",
+					latitudeField: "lat",
+					longitudeField: "lot",
+					renderer: xydrotationRenderer,
+					labelsVisible: true,
+					labelingInfo: [labelClass],
+					fields: [{
+							name: "name",
+							alias: "name",
+							type: "string"
+						},
+						{
+							name: "others",
+							alias: "others",
+							type: "string"
+						},
+
+					],
+					popupTemplate: {
+						title: "{name}",
+						content: "{expression/per-land-area}{imgpath}",
+						expressionInfos: [{
+							title: "per-land-area",
+							name: "per-land-area",
+							expression: "IIF(!IsEmpty($feature.name), $feature.others, 'No data')"
+						}]
+					},
+				});
+
+
+				const shdlayer = new CSVLayer({
+					url: "https://pandazgb.github.io/map/沙湖点_点_.csv",
+					latitudeField: "lat",
+					longitudeField: "lot",
+					renderer: shdrotationRenderer,
+					labelsVisible: true,
+					labelingInfo: [labelClass],
+					popupTemplate: {
+						title: "{name}",
+						content: "{expression/per-land-area}{imgpath}",
+						expressionInfos: [{
+							title: "per-land-area",
+							name: "per-land-area",
+							expression: "IIF(!IsEmpty($feature.name), $feature.other, 'No data')"
+						}]
+					},
+				});
+
+
+
+
+
+				const ourpath = new GeoJSONLayer({
+					url: "https://pandazgb.github.io/map/ourpath.json",
+					labelsVisible: true,
+					labelingInfo: [labelClass],
+					fields: [{
+							name: "name",
+							type: "string"
+						},
+						{
+							name: "imgpath",
+							type: "string"
+						},
+					],
+					popupTemplate: {
+						title: "{name}",
+						content: "{expression/per-land-area}<img src='https://pandazgb.github.io/map/{imgpath}'>",
+						expressionInfos: [{
+							title: "per-land-area",
+							name: "per-land-area",
+							expression: "IIF(!IsEmpty($feature.name), $feature.others, 'No data')"
+						}]
+					},
+				});
+
+
+
+				const shahupath = new GeoJSONLayer({
+					url: "https://pandazgb.github.io/map/shahupath.json",
+					labelsVisible: true,
+					labelingInfo: [labelClass],
+					fields: [{
+							name: "name",
+							type: "string"
+						},
+						{
+							name: "imgpath",
+							type: "string"
+						},
+					],
+					popupTemplate: {
+						title: "{name}",
+						content: "{expression/per-land-area}<img src='https://pandazgb.github.io/map/{imgpath}'>",
+						expressionInfos: [{
+							title: "per-land-area",
+							name: "per-land-area",
+							expression: "IIF(!IsEmpty($feature.name), $feature.others, 'No data')"
+						}]
+					},
+				});
+
+
+
+				const kisspath = new GeoJSONLayer({
+					url: "https://pandazgb.github.io/map/kisspath.json",
+					labelsVisible: true,
+					labelingInfo: [labelClass],
+					fields: [{
+							name: "name",
+							type: "string"
+						},
+						{
+							name: "imgpath",
+							type: "string"
+						},
+					],
+					popupTemplate: {
+						title: "{name}",
+						content: "{expression/per-land-area}<img src='https://pandazgb.github.io/map/{imgpath}'>",
+						expressionInfos: [{
+							title: "per-land-area",
+							name: "per-land-area",
+							expression: "IIF(!IsEmpty($feature.name), $feature.others, 'No data')"
+						}]
+					},
+				});
+
+				const Criclepath = new GeoJSONLayer({
+					url: "https://pandazgb.github.io/map/ourCircle.json",
+					labelsVisible: true,
+					labelingInfo: [labelClass],
+					fields: [{
+							name: "name",
+							type: "string"
+						},
+						{
+							name: "imgpath",
+							type: "string"
+						},
+					],
+					popupTemplate: {
+						title: "{name}",
+						content: "{imgpath}",
+						expressionInfos: [{
+							title: "per-land-area",
+							name: "per-land-area",
+							expression: "IIF(!IsEmpty($feature.name), $feature.others, 'No data')"
+						}]
+					},
+				});
+
+
+
+
+				const map = new Map({
+					basemap: "satellite",
+				});
+				const view = new SceneView({
+					container: "viewDiv",
+					map: map,
+
+					camera: {
+						position: [114.329449108, 30.547086528, 3000],
+						tilt: 40
+					}
+				});
+				
+				 var url=["gchang.jpg","qdong.jpg","path.jpg","queqiao.jpg","xiaopo.jpg","IMG20171101123209.jpg","IMG20171116095038.jpg","noimg.jpg","ourpath.jpg","school.jpg"];
+				
+				var count=0;
+				
+				function visit(){
+					if(count<url.length){
+						document.getElementById("ig").src="https://pandazgb.github.io/map/"+url[count++];
+					}else{
+						count=0;
+						document.getElementById("ig").src="https://pandazgb.github.io/map/"+url[count];
+					}
+					
+				}
+				var b;
+				function buduanjishu() {
+					document.getElementById("ig").style.display="block";
+				 b = setInterval(function(){visit()}, 2000);
+					
+				}
+				
+				document.getElementById("fbutton").onclick =function(){
+					document.getElementById("first").style.display= "block";
+					xydlayer.when(function() {
+						view.extent = xydlayer.fullExtent;
+					});
+					map.removeAll();
+					map.add(xydlayer);
+				}
+				
+				document.getElementById("buttonf").onclick =function(){
+					document.getElementById("sbutton").style.display= "block";
+					
+					ourpath.when(function() {
+						view.extent = ourpath.fullExtent;
+					});
+					map.removeAll();
+					map.addMany([tmdlayer,Criclepath,ourpath]);
+				}
+				document.getElementById("sbutton").onclick =function(){
+					document.getElementById("second").style.display= "block";
+					shdlayer.when(function() {
+						view.extent = shdlayer.fullExtent;
+					});
+					map.removeAll();
+					map.add(shdlayer);
+				}
+				document.getElementById("buttons").onclick =function(){
+					document.getElementById("tbutton").style.display= "block";
+					kisspath.when(function() {
+						view.extent = kisspath.fullExtent;
+					});
+					map.removeAll();
+					map.add(kisspath);
+				}
+				document.getElementById("tbutton").onclick =function(){
+					document.getElementById("thrid").style.display= "block";
+					document.getElementById("tbutton").style.display= "block";
+					shahupath.when(function() {
+						view.extent = shahupath.fullExtent;
+					});
+					map.removeAll();
+					map.add(shahupath);
+				}
+				document.getElementById("buttont").onclick =function(){
+					if(document.getElementById("ig").style.display=="block"){
+					clearInterval(b);
+					document.getElementById("ig").style.display="none";
+					}else{
+						buduanjishu();
+					}
+					
+				}
+               
+					
+			});
+		</script>
+	</head>
+	<body>
+
+		<div id="photos" style="position: absolute;right:0px;z-index: 20;">
+			<img id="ig" style="width: 300px;height:300px; display: none;" src="https://pandazgb.github.io/map/gchang.jpg">
+		</div>
+		<div id="viewDiv">
+			<div class="tree">
+				<button id="fbutton" type="button">缘起</button>
+				<div id="first">
+					<button id="buttonf" type="button">序章</button>
+				</div>
+				<button id="sbutton" type="button">缘升</button>
+				<div id="second">
+					<button id="buttons" type="button">和鸣</button>
+				</div>
+				<button id="tbutton" type="button">缘远</button>
+				<div id="thrid">
+					<button id="buttont" type="button">图鉴</button>
+				</div>
+			</div>
+		</div>
+	</body>
+
+</html>
